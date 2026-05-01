@@ -1,0 +1,33 @@
+{
+  "name": "lamoon-coffee",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:css": "tailwindcss -i ./src/index.css -o ./src/styles.css --watch",
+    "dev:server": "bun --hot src/server.ts",
+    "dev": "bun run dev:css & bun run dev:server",
+    "build:css": "tailwindcss -i ./src/index.css -o ./src/styles.css --minify",
+    "build:js": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
+    "build": "bun run build:css && bun run build:js",
+    "start": "NODE_ENV=production bun src/server.ts"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "autoprefixer": "^10.5.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.14.0",
+    "postcss": "^8.5.13",
+    "react": "^19",
+    "react-dom": "^19",
+    "react-router-dom": "^7.14.2",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^3.4.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  }
+}
