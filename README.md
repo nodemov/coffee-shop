@@ -22,23 +22,33 @@ A multi-page React SPA for a specialty coffee shop with online ordering. Built w
 |---|---|
 | Runtime | Bun |
 | Framework | React 19 |
-| Router | React Router DOM |
+| Router | React Router DOM (BrowserRouter) |
 | Language | TypeScript |
 | Styling | Tailwind CSS v3 |
-| UI Primitives | shadcn/ui pattern (Radix + CVA) |
+| UI Primitives | shadcn/ui pattern (Radix + CVA + Tailwind) |
 | Icons | Lucide React |
-| State | React Context + useReducer |
+| State | React Context + useReducer (cart) |
 
 ## Design System
 
 Warm editorial palette inspired by specialty coffee aesthetics:
 
-- **Canvas** `#faf9f5` — page background
-- **Primary** `#cc785c` — coral CTA buttons
-- **Surface Dark** `#181715` — dark sections, footer
-- **Typography** — Cormorant Garamond (serif headlines) + Inter (sans body)
+| Token | Value | Usage |
+|---|---|---|
+| **Canvas** | `#faf9f5` | Page background |
+| **Surface Soft** | `#f5f0e8` | Section bands |
+| **Surface Card** | `#efe9de` | Cards |
+| **Surface Dark** | `#181715` | Dark sections, footer |
+| **Primary** | `#cc785c` | Coral CTA buttons |
+| **Primary Active** | `#a9583e` | Hover/press states |
+| **Ink** | `#141413` | Headlines |
+| **Body** | `#3d3d3a` | Body text |
+| **Muted** | `#6c6a64` | Secondary text |
 
-![Menu Page](public/images/screenshot-menu.png)
+**Typography**
+- **Cormorant Garamond** — serif display headlines (weight 400, negative tracking)
+- **Inter** — sans-serif body and UI text
+- **JetBrains Mono** — prices and labels
 
 ## Getting Started
 
@@ -78,13 +88,75 @@ bun start
 
 ```
 src/
-├── core/           # Global styles, Tailwind theme
-├── shared/         # UI components, layout, hooks, types
-├── features/       # Domain features (home, menu, cart, about, locations, contact)
-├── pages/          # Thin route wrappers
-├── App.tsx         # Router config
-└── frontend.tsx    # Entry point
+├── App.tsx                 # Router config + Layout wrapper
+├── frontend.tsx            # Client entry point (createRoot + StrictMode)
+├── index.html              # HTML template
+├── index.css               # Tailwind directives + base styles
+├── styles.css              # Generated Tailwind build output
+├── server.ts               # Bun production server
+├── core/                   # Global styles, theme, providers (extensible)
+├── shared/
+│   ├── ui/                 # Button, Card, Input, Badge (shadcn/ui pattern)
+│   ├── components/
+│   │   ├── TopNav.tsx      # Navigation bar with cart badge
+│   │   └── Footer.tsx      # Site footer
+│   ├── hooks/
+│   │   └── useCart.tsx     # CartProvider + useCart hook
+│   ├── lib/
+│   │   └── utils.ts        # cn() utility (clsx + tailwind-merge)
+│   └── types/
+│       └── index.ts        # Product, CartItem, Order, CategoryTab
+├── features/
+│   ├── home/
+│   │   ├── components/     # HeroBand, FeaturedDrinks, StoryPreview, MenuPreview, VisitCTA, Testimonials
+│   │   └── HomePage.tsx
+│   ├── menu/
+│   │   ├── components/     # CategoryTabs, ProductCard
+│   │   ├── data/
+│   │   │   └── products.ts # 15 mock products
+│   │   └── MenuPage.tsx
+│   ├── cart/
+│   │   └── CartPage.tsx    # Cart + checkout form
+│   ├── about/
+│   │   └── AboutPage.tsx
+│   ├── locations/
+│   │   └── LocationsPage.tsx
+│   └── contact/
+│       └── ContactPage.tsx
+└── pages/                  # Thin route wrappers that re-export from features/
+    ├── HomePage.tsx
+    ├── MenuPage.tsx
+    ├── CartPage.tsx
+    ├── AboutPage.tsx
+    ├── LocationsPage.tsx
+    └── ContactPage.tsx
 ```
+
+### Architecture Rules
+
+1. **No cross-feature imports** — Features do not import from each other. Reuse via `shared/`.
+2. **Shared abstraction only** — Reusable UI, hooks, types, and utilities live in `shared/`.
+3. **Pages are thin** — `pages/MenuPage.tsx` re-exports `features/menu/MenuPage.tsx`.
+
+## Routing
+
+| Route | Page | Description |
+|---|---|---|
+| `/` | Home | Hero, featured drinks, story, testimonials |
+| `/menu` | Menu | Product catalog with category filtering |
+| `/cart` | Cart | Cart management + checkout |
+| `/about` | About | Coffee shop story |
+| `/locations` | Locations | Café location finder |
+| `/contact` | Contact | Contact form |
+
+## State Management
+
+### Cart
+
+- `CartProvider` wraps the app in `App.tsx`
+- `useCart()` hook provides: `items`, `addItem`, `removeItem`, `updateQuantity`, `clearCart`, `totalItems`, `totalPrice`
+- Persisted to `localStorage` key `"lamoon-cart"`
+- Cart badge appears in `TopNav`
 
 ## Mobile View
 
